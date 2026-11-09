@@ -37,6 +37,8 @@
   "panel.previous": "‹ Previous",
   "panel.next": "Next ›",
   "panel.pageOf": "Page %1 of %2",
+  "panel.searchPlaceholder": "Search changes and repos",
+  "panel.noMatches": "No changes match \"%1\"",
   "change.back": "‹ All changes",
   "change.lastCommit": "last commit %1",
   "change.lastEdited": "last edited %1",

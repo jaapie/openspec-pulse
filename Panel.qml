@@ -19,7 +19,10 @@ Item {
   // The open change, as { repo, name } from BarWidget; null shows the list.
   // Looked up in each fresh report, so a refresh updates its tasks.
   property var chosen: null
+  // The search text, kept by BarWidget like the page; empty shows every change.
+  property string filterText: ""
   signal changeChosen(var change)
+  signal filterRequested(string text)
   signal pageRequested(int page)
   signal backRequested()
   signal closeRequested()
@@ -31,6 +34,22 @@ Item {
   readonly property var changeErrors: changes.filter(function(c) { return !!c.error })
   readonly property string cliError: service ? service.cliError : ""
   readonly property string nudgesError: service ? service.nudgesError : ""
+  // While the search box has focus, BarWidget stops the panel's key catcher
+  // so letters such as j, k and x are typed rather than taken as keys.
+  readonly property bool searchFocused: searchField.activeFocus
+
+  // Filtering only hides rows: order, groups and judgement stay the CLI's.
+  // Totals and errors read the whole report, so a search never hides either.
+  readonly property string query: filterText.trim().toLowerCase()
+  readonly property var shownChanges: {
+    if (query === "") return changes
+    var q = query
+    return changes.filter(function(c) {
+      return String(c.name || "").toLowerCase().indexOf(q) !== -1
+          || String(c.repo || "").toLowerCase().indexOf(q) !== -1
+    })
+  }
+
   readonly property var current: {
     if (!chosen) return null
     for (var i = 0; i < changes.length; i++)
@@ -74,6 +93,17 @@ Item {
     return "notStarted"
   }
 
+  // Typing goes straight into the search box whenever the list shows.
+  function focusSearch() {
+    if (current === null && searchField.visible) searchField.forceActiveFocus()
+  }
+  // Out of the box when a change opens, so the key catcher sees Escape again.
+  onCurrentChanged: {
+    if (current === null) Qt.callLater(focusSearch)
+    else root.forceActiveFocus()
+  }
+  onFilterTextChanged: if (searchField.text !== filterText) searchField.text = filterText
+
   function openAgent(change) {
     if (root.service) root.service.openAgent(change)
     root.closeRequested()
@@ -98,8 +128,8 @@ Item {
 
   function paginate(room) {
     var pages = [], current = [], used = 0
-    for (var i = 0; i < changes.length; i++) {
-      var change = changes[i]
+    for (var i = 0; i < shownChanges.length; i++) {
+      var change = shownChanges[i]
       var first = current.length === 0
       var heading = first || group(change) !== group(current[current.length - 1])
       var need = (heading ? (first ? firstHeadingHeight : laterHeadingHeight) : 0) + rowHeight + rowGap
@@ -373,6 +403,23 @@ Item {
       font.family: Style.font.family
       font.pixelSize: Style.font.body
     }
+
+    // Last in this column, so the list starts below it and pages make room.
+    TextField {
+      id: searchField
+      visible: root.report !== null
+      width: parent.width
+      foreground: root.textColor
+      placeholderText: strings.t("panel.searchPlaceholder")
+      onTextEdited: root.filterRequested(text)
+      onVisibleChanged: if (visible) Qt.callLater(root.focusSearch)
+      // Escape clears a search first; only an empty box lets it close the panel.
+      Keys.onEscapePressed: function(event) {
+        if (text !== "") root.filterRequested("")
+        else root.closeRequested()
+        event.accepted = true
+      }
+    }
   }
 
   Column {
@@ -380,6 +427,18 @@ Item {
     visible: root.current === null
     y: root.listTop
     width: parent.width
+
+    // A search that matches nothing says so, so it never reads as no changes.
+    Text {
+      visible: root.report !== null && root.query !== "" && root.shownChanges.length === 0
+      width: parent.width
+      textFormat: Text.PlainText
+      text: strings.t("panel.noMatches").arg(root.filterText.trim())
+      color: root.mutedColor
+      wrapMode: Text.Wrap
+      font.family: Style.font.family
+      font.pixelSize: Style.font.body
+    }
 
     Repeater {
       model: root.pageChanges

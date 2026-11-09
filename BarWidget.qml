@@ -36,10 +36,15 @@ Panel {
   property int page: 0
   // The open change as { repo, name }, or null for the list.
   property var chosen: null
+  // The search text, kept with the page so it survives the change view.
+  // Changing it goes back to page 1; reopening clears it.
+  property string filterText: ""
+  onFilterTextChanged: page = 0
 
   onOpenedChanged: if (opened) {
     page = 0
     chosen = null
+    filterText = ""
     if (service) {
       service.clearToggleError()
       service.refresh()
@@ -78,7 +83,11 @@ Panel {
     content: PanelKeyCatcher {
       anchors.fill: parent
       implicitHeight: contentLoader.implicitHeight
+      // The search box takes typed letters itself and handles its own Escape.
+      blocked: contentLoader.item ? contentLoader.item.searchFocused : false
       onCloseRequested: root.close()
+      // The panel focuses this on open; hand it on to the search box.
+      onActiveFocusChanged: if (activeFocus && contentLoader.item) contentLoader.item.focusSearch()
       Loader {
         id: contentLoader
         anchors.fill: parent
@@ -87,6 +96,8 @@ Panel {
           item.service = Qt.binding(function() { return root.service })
           item.page = Qt.binding(function() { return root.page })
           item.pageRequested.connect(function(p) { root.page = p })
+          item.filterText = Qt.binding(function() { return root.filterText })
+          item.filterRequested.connect(function(t) { root.filterText = t })
           item.chosen = Qt.binding(function() { return root.chosen })
           item.changeChosen.connect(function(c) { root.chosen = { repo: c.repo, name: c.name } })
           item.backRequested.connect(function() { root.chosen = null })
