@@ -1,1 +1,5 @@
 .superpowers/
+
+# Private working notes and local agent tooling, never published.
+CLAUDE.local.md
+.claude/

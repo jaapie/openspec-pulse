@@ -168,6 +168,8 @@ Ideas, roughly in order. Nothing here is promised.
 
 Issues and pull requests are welcome at [github.com/jaapie/openspec-pulse](https://github.com/jaapie/openspec-pulse): bugs, ideas, or a go at something on the roadmap.
 
+The project's plans (OpenSpec changes and specs) are kept privately, which is what `openspec/config.yaml` refers to. You don't need them to contribute: if OpenSpec reports an unknown store, that's expected.
+
 **Wanted: an icon.** The notification currently uses a placeholder, `assets/icon.png`, which is just "OSP" in white on a transparent background. If you'd like to design something better, a pull request or an issue with a sketch would be lovely. It needs to read well small, on light and dark notification cards.
 
 To work on it:
