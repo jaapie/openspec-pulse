@@ -148,8 +148,38 @@ Without mise, or to use a CLI installed somewhere else, set the widget's `comman
 
 The plugin still runs it with the PATH above, so the Ruby it starts with must have the gems installed.
 
-## Development
+## Roadmap
+
+Ideas, roughly in order. Nothing here is promised.
+
+- **Reminders**: dated reminders to come back to a change (or a task in one), shown as notifications with snooze and dismiss, a "due now" section at the top of the panel, and a second badge. Clicking one opens your agent with a prompt for that change.
+- **Faster `status`**: run the `openspec list` calls in parallel and batch the git calls per repo. Most of a run's time today is starting `openspec` once per repo.
+- **Options**:
+  - show the change list paged, as now, or as one scrolling list;
+  - choose where "Open in agent" opens: a new terminal (as now), a new window in a running tmux session, or a new herdr tab.
+- **Snoozing a change**: hide a change from the stale count until a date, at most a week ahead.
+- **Waiting markers**: mark a task as waiting on someone else, so a change that's blocked doesn't nag.
+- **Grouping by repo** in the panel.
+- **Reminders away from the desktop**, for when you're not at this machine.
+- **Task counting**: OpenSpec also counts lines like `* [ ]` and `1. [ ]` as tasks, while openspec-pulse only counts `- [ ]`. Today a difference shows as a count mismatch; matching OpenSpec may be better.
+- **A real icon** (see below).
+
+## Contributing
+
+Issues and pull requests are welcome at [github.com/jaapie/openspec-pulse](https://github.com/jaapie/openspec-pulse): bugs, ideas, or a go at something on the roadmap.
+
+**Wanted: an icon.** The notification currently uses a placeholder, `assets/icon.png`, which is just "OSP" in white on a transparent background. If you'd like to design something better, a pull request or an issue with a sketch would be lovely. It needs to read well small, on light and dark notification cards.
+
+To work on it:
 
 ```sh
+git clone https://github.com/jaapie/openspec-pulse.git
+cd openspec-pulse
+bundle install
 bundle exec rspec
 ```
+
+- The CLI holds all the logic and is built test-first with RSpec: please add a failing spec before the code that makes it pass, and keep `bundle exec rspec` green.
+- The QML only lays out what the CLI reports. Check plugin changes with `omarchy plugin validate .`, then try them in the real shell. After `omarchy plugin update`, restart the shell (`omarchy restart shell`) so it picks up panel changes.
+- Text shown from the CLI's JSON stays plain text (`textFormat: Text.PlainText`), and plugin strings go in `i18n/en.json`. Translations into other languages are welcome too.
+- The tool must stay read-only towards the repos it reads, and must never show an error as "nothing to report".
