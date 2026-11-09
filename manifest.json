@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.jaapie.openspec-pulse",
+  "name": "OpenSpec Pulse",
+  "version": "0.1.0",
+  "author": "Jacob Degeling",
+  "license": "MIT",
+  "description": "Shows which OpenSpec changes have gone quiet, and their tasks, from the openspec-pulse CLI.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "OpenSpec Pulse",
+    "description": "Stale OpenSpec changes and their tasks",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "schema": [
+      {
+        "key": "command",
+        "type": "string",
+        "label": "openspec-pulse command",
+        "defaultValue": "",
+        "description": "Optional. Full path to the openspec-pulse executable. Leave empty to use openspec-pulse on PATH, or the copy in this plugin's bin folder."
+      }
+    ]
+  }
+}

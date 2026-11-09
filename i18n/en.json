@@ -1,0 +1,51 @@
+{
+  "bar.stale": {
+    "one": "%1 OpenSpec change has gone quiet",
+    "other": "%1 OpenSpec changes have gone quiet"
+  },
+  "bar.nothingStale": "No OpenSpec changes have gone quiet",
+  "bar.error": "openspec-pulse has a problem: open the panel to see it",
+  "bar.loading": "Reading OpenSpec changes",
+  "panel.title": "OpenSpec changes",
+  "panel.changes": {
+    "one": "%1 change",
+    "other": "%1 changes"
+  },
+  "panel.stale": {
+    "one": "%1 stale",
+    "other": "%1 stale"
+  },
+  "panel.archive": {
+    "one": "%1 ready to archive",
+    "other": "%1 ready to archive"
+  },
+  "panel.days": {
+    "one": "%1 day",
+    "other": "%1 days"
+  },
+  "panel.ready": {
+    "one": "%1 ready",
+    "other": "%1 ready"
+  },
+  "panel.readyToArchive": "ready to archive",
+  "panel.notStarted": "not started",
+  "panel.group.stale": "Stale",
+  "panel.group.archive": "Ready to archive",
+  "panel.group.progress": "In progress",
+  "panel.group.notStarted": "Not yet started",
+  "panel.group.errors": "Couldn't read",
+  "panel.previous": "‹ Previous",
+  "panel.next": "Next ›",
+  "panel.pageOf": "Page %1 of %2",
+  "change.back": "‹ All changes",
+  "change.lastCommit": "last commit %1",
+  "change.lastEdited": "last edited %1",
+  "change.untitled": "Tasks",
+  "change.showDone": "%1 done (show)",
+  "change.hideDone": "%1 done (hide)",
+  "change.noTasksFile": "This change has no tasks.md.",
+  "change.openTasks": "Open tasks.md",
+  "panel.nudgesOn": "Daily reminder is on. The badge shows stale changes either way.",
+  "panel.nudgesOff": "Daily reminder is off. The badge still shows stale changes.",
+  "change.openAgent": "Open in agent"
+}
