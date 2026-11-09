@@ -69,7 +69,7 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: panel.loadedContent
-    contentWidth: panel.fittedContentWidth(Style.space(420))
+    contentWidth: panel.fittedContentWidth(Style.space(460))
     // Panel.qml is a fixed 640px and pages rather than scrolls; the screen
     // height is the only other limit.
     contentHeight: panel.fittedContentHeight(panel.loadedContentHeight)

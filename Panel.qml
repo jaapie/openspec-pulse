@@ -51,7 +51,7 @@ Item {
 
   Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
 
-  implicitWidth: Style.space(420)
+  implicitWidth: Style.space(460)
   implicitHeight: panelHeight
 
   function count(key, n) { return strings.tn(key, n).arg(Commons.I18n.formatNumber(n)) }

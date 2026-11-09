@@ -1,6 +1,10 @@
 # openspec-pulse
 
-Tells you which OpenSpec changes have gone quiet, across every repo on this machine, so a change doesn't get forgotten altogether.
+Tells you which OpenSpec changes have gone quiet, across every repo on your machine, so a change doesn't get forgotten altogether.
+
+![The openspec-pulse panel open under its bar badge, listing changes grouped as stale, ready to archive, in progress and not yet started](preview.png)
+
+*The Omarchy panel, with demo data.*
 
 Two parts live in this repo:
 
