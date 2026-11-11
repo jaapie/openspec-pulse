@@ -4,6 +4,7 @@ require "json"
 require "time"
 require_relative "discovery"
 require_relative "tasks_parser"
+require_relative "proposal_parser"
 require_relative "git_clock"
 require_relative "change_assessor"
 
@@ -15,7 +16,7 @@ module OpenspecPulse
     Change = Data.define(
       :repo, :repo_path, :name, :path, :last_touched, :touched_source, :days_quiet,
       :kind, :openspec_status, :stale, :done, :total, :ready,
-      :openspec_done, :openspec_total, :count_mismatch, :tasks_file, :error, :groups
+      :openspec_done, :openspec_total, :count_mismatch, :tasks_file, :error, :groups, :purpose
     )
 
     REQUIRED_FIELDS = { "name" => String, "completedTasks" => Integer, "totalTasks" => Integer }.freeze
@@ -145,7 +146,8 @@ module OpenspecPulse
       base = { repo: repo.name, repo_path: repo.path, name:, path:,
                last_touched: touched, touched_source: source,
                openspec_status: entry["status"],
-               openspec_done: entry["completedTasks"], openspec_total: entry["totalTasks"] }
+               openspec_done: entry["completedTasks"], openspec_total: entry["totalTasks"],
+               purpose: ProposalParser.purpose_from_file(File.join(path, "proposal.md")) }
 
       begin
         tasks = TasksParser.parse_file(File.join(path, "tasks.md"))

@@ -113,13 +113,52 @@ RSpec.describe OpenspecPulse::Report do
     end
   end
 
+  describe "purpose" do
+    def write_proposal(repo, change, text)
+      File.write(File.join(repo.path, "openspec/changes", change, "proposal.md"), text)
+    end
+
+    it "gives a change the purpose from its proposal" do
+      repo = make_repo("acme-api", "add-rate-limits" => "- [ ] 1.1 a\n")
+      write_proposal(repo, "add-rate-limits", "## Why\n\nJira: ABC-12.\n\nOne noisy client can starve the rest.\n")
+      openspec_says(repo, entry("add-rate-limits", 0, 1))
+
+      expect(build([repo]).changes.first.purpose).to eq("One noisy client can starve the rest.")
+    end
+
+    it "gives nil, and no error, when there is no proposal" do
+      repo = make_repo("acme-api", "add-rate-limits" => "- [ ] 1.1 a\n")
+      openspec_says(repo, entry("add-rate-limits", 0, 1))
+
+      change = build([repo]).changes.first
+
+      expect(change.purpose).to be_nil
+      expect(change.error).to be_nil
+    end
+
+    it "keeps the purpose on a change with an unreadable tasks.md" do
+      repo = make_repo("acme-api", "locked" => "- [x] 1.1 a\n")
+      write_proposal(repo, "locked", "## Why\n\nRefunds vanish from the export.\n")
+      tasks = File.join(repo.path, "openspec/changes/locked/tasks.md")
+      File.chmod(0o000, tasks)
+      openspec_says(repo, entry("locked", 1, 1))
+
+      change = build([repo]).changes.first
+
+      expect(change.error).to match(/tasks\.md/)
+      expect(change.purpose).to eq("Refunds vanish from the export.")
+    ensure
+      File.chmod(0o644, tasks) if tasks
+    end
+  end
+
   describe "sorting, summary and JSON (6.3)" do
     def change(repo:, name:, kind:, days:, stale: false, error: nil)
       described_class::Change.new(
         repo:, repo_path: "/r/#{repo}", name:, path: "/r/#{repo}/openspec/changes/#{name}",
         last_touched: now - (days * 86_400), touched_source: "git", days_quiet: days,
         kind:, openspec_status: "in-progress", stale:, done: 1, total: 2, ready: 1,
-        openspec_done: 1, openspec_total: 2, count_mismatch: false, tasks_file: true, error:, groups: []
+        openspec_done: 1, openspec_total: 2, count_mismatch: false, tasks_file: true, error:, groups: [], purpose: nil
       )
     end
 
@@ -201,7 +240,7 @@ RSpec.describe OpenspecPulse::Report do
         expect(json["repos"].first.keys).to contain_exactly("path", "name", "error")
         expect(json["changes"].first.keys).to include(
           "repo", "repo_path", "name", "path", "last_touched", "touched_source", "days_quiet", "kind",
-          "openspec_status", "stale", "done", "total", "ready", "count_mismatch", "tasks_file", "error", "groups"
+          "openspec_status", "stale", "done", "total", "ready", "count_mismatch", "tasks_file", "error", "groups", "purpose"
         )
         stale = json["changes"].first
         expect(stale).to include("name" => "stale-one", "days_quiet" => 91, "stale" => true, "ready" => 1,
