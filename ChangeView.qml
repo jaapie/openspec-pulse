@@ -160,13 +160,9 @@ Item {
         width: groupsColumn.width
         spacing: Style.space(4)
 
-        Text {
-          textFormat: Text.PlainText
+        PanelSectionHeader {
+          foreground: root.textColor
           text: strings.t("change.purpose")
-          color: root.textColor
-          font.family: Style.font.family
-          font.pixelSize: Style.font.body
-          font.bold: true
         }
         Text {
           id: purposeText
@@ -194,6 +190,14 @@ Item {
             onClicked: root.purposeExpanded = !root.purposeExpanded
           }
         }
+      }
+
+      // Separates the purpose from the task groups; without a purpose the
+      // groups start at the top as before.
+      PanelSectionHeader {
+        visible: !!(root.change && root.change.purpose)
+        foreground: root.textColor
+        text: strings.t("change.tasks")
       }
 
       Text {
