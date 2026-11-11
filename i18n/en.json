@@ -51,6 +51,7 @@
   "change.hideDone": "%1 done (hide)",
   "change.noTasksFile": "This change has no tasks.md.",
   "change.openTasks": "Open tasks.md",
+  "change.openJira": "Open in Jira",
   "panel.nudgesOn": "Daily reminder is on. The badge shows stale changes either way.",
   "panel.nudgesOff": "Daily reminder is off. The badge still shows stale changes.",
   "change.openAgent": "Open in agent"

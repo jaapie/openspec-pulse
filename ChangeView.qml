@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Quickshell.Io
 import qs.Commons
 import qs.Commons as Commons
 import qs.Ui
@@ -21,6 +22,9 @@ Item {
   readonly property color mutedColor: Commons.Color.muted
   readonly property color attentionColor: Commons.Color.urgent
   readonly property color accentColor: Commons.Color.accent
+  // The theme's blue for the Jira chip. Commons.Color doesn't expose it, so it
+  // is read from colors.toml, falling back to the accent.
+  property color jiraColor: accentColor
 
   // Which groups have their done tasks showing, by index. Reset per change.
   property var shownDone: ({})
@@ -59,6 +63,31 @@ Item {
     root.launched()
   }
 
+  function openJira() {
+    Util.execArgv(["omarchy-launch-browser", change.jira.url])
+    root.launched()
+  }
+
+  function loadBlue(raw) {
+    var match = String(raw || "").match(/^\s*blue\s*=\s*["']?(#[0-9A-Fa-f]{6})/m)
+    root.jiraColor = match ? match[1] : Qt.binding(function() { return root.accentColor })
+  }
+
+  // Commons.Color reads colors.toml once and hears of theme switches over IPC,
+  // so the blue is read again whenever the accent changes.
+  FileView {
+    id: themeColors
+    path: Commons.Color.currentThemePath + "/colors.toml"
+    watchChanges: false
+    printErrors: false
+    onLoaded: root.loadBlue(text())
+    onLoadFailed: root.loadBlue("")
+  }
+  Connections {
+    target: Commons.Color
+    function onAccentChanged() { themeColors.reload() }
+  }
+
   function doneTasks(group) { return group.tasks.filter(function(t) { return t.done }) }
   function openTasks(group) { return group.tasks.filter(function(t) { return !t.done }) }
 
@@ -87,14 +116,61 @@ Item {
         font.pixelSize: Style.font.heading
         font.bold: true
       }
-      Text {
+
+      // Repo and date on the left, the change's Jira task on the right.
+      Item {
         width: parent.width
-        textFormat: Text.PlainText
-        text: root.change ? [root.change.repo, root.touchedText()].filter(function(s) { return s }).join(" · ") : ""
-        color: root.mutedColor
-        elide: Text.ElideRight
-        font.family: Style.font.family
-        font.pixelSize: Style.font.bodySmall
+        height: Math.max(subText.implicitHeight, jiraChip.visible ? jiraChip.height : 0)
+
+        Text {
+          id: subText
+          anchors.left: parent.left
+          anchors.right: jiraChip.visible ? jiraChip.left : parent.right
+          anchors.rightMargin: jiraChip.visible ? Style.space(8) : 0
+          anchors.verticalCenter: parent.verticalCenter
+          textFormat: Text.PlainText
+          text: root.change ? [root.change.repo, root.touchedText()].filter(function(s) { return s }).join(" · ") : ""
+          color: root.mutedColor
+          elide: Text.ElideRight
+          font.family: Style.font.family
+          font.pixelSize: Style.font.bodySmall
+        }
+
+        // The change's Jira task, from its proposal. Opens the task in the
+        // browser when jira_url is set; without a task the header is as before.
+        Rectangle {
+          id: jiraChip
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          visible: !!(root.change && root.change.jira)
+          width: jiraKey.implicitWidth + Style.space(12)
+          height: jiraKey.implicitHeight + Style.space(4)
+          radius: height / 2
+          color: Qt.rgba(root.jiraColor.r, root.jiraColor.g, root.jiraColor.b, 0.15)
+          border.width: 1
+          border.color: root.jiraColor
+          Text {
+            id: jiraKey
+            anchors.centerIn: parent
+            textFormat: Text.PlainText
+            text: root.change && root.change.jira ? root.change.jira.key : ""
+            color: root.jiraColor
+            font.family: Style.font.family
+            font.pixelSize: Style.font.bodySmall
+          }
+          MouseArea {
+            id: jiraMouse
+            anchors.fill: parent
+            enabled: !!(root.change && root.change.jira && root.change.jira.url)
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.openJira()
+          }
+          PanelToolTip {
+            visible: jiraMouse.enabled && jiraMouse.containsMouse
+            text: strings.t("change.openJira")
+          }
+        }
       }
     }
 
