@@ -16,7 +16,7 @@ module OpenspecPulse
     Change = Data.define(
       :repo, :repo_path, :name, :path, :last_touched, :touched_source, :days_quiet,
       :kind, :openspec_status, :stale, :done, :total, :ready,
-      :openspec_done, :openspec_total, :count_mismatch, :tasks_file, :error, :groups, :purpose
+      :openspec_done, :openspec_total, :count_mismatch, :tasks_file, :error, :groups, :purpose, :jira
     )
 
     REQUIRED_FIELDS = { "name" => String, "completedTasks" => Integer, "totalTasks" => Integer }.freeze
@@ -25,8 +25,8 @@ module OpenspecPulse
 
     attr_reader :repos, :changes, :generated_at, :stale_after_days, :nudges
 
-    def self.build(repos:, runner:, stale_after_days:, now:, nudges:)
-      new(runner:, stale_after_days:, now:, nudges:).tap { it.read(repos) }
+    def self.build(repos:, runner:, stale_after_days:, now:, nudges:, jira_url: nil)
+      new(runner:, stale_after_days:, now:, nudges:, jira_url:).tap { it.read(repos) }
     end
 
     # Stale (quietest first), complete, other in progress (quietest first),
@@ -44,8 +44,9 @@ module OpenspecPulse
       end
     end
 
-    def initialize(runner:, stale_after_days:, now:, nudges:)
+    def initialize(runner:, stale_after_days:, now:, nudges:, jira_url: nil)
       @runner = runner
+      @jira_url = jira_url
       @stale_after_days = stale_after_days
       @generated_at = now
       @nudges = nudges
@@ -143,11 +144,12 @@ module OpenspecPulse
       name = entry["name"]
       path = File.join(repo.path, "openspec", "changes", name)
       touched, source = @clock.last_touched(repo.path, name)
+      proposal = ProposalParser.read_file(File.join(path, "proposal.md"))
       base = { repo: repo.name, repo_path: repo.path, name:, path:,
                last_touched: touched, touched_source: source,
                openspec_status: entry["status"],
                openspec_done: entry["completedTasks"], openspec_total: entry["totalTasks"],
-               purpose: ProposalParser.purpose_from_file(File.join(path, "proposal.md")) }
+               purpose: proposal.purpose, jira: jira(proposal.jira_key) }
 
       begin
         tasks = TasksParser.parse_file(File.join(path, "tasks.md"))
@@ -160,6 +162,10 @@ module OpenspecPulse
                          done: a.done, total: a.total, ready: a.ready,
                          count_mismatch: a.count_mismatch, tasks_file: tasks.tasks_file,
                          error: nil, groups: tasks.groups)
+    end
+
+    def jira(key)
+      key && { key:, url: @jira_url && "#{@jira_url}/browse/#{key}" }
     end
 
     def marker(change)

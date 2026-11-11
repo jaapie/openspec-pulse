@@ -11,7 +11,7 @@ RSpec.describe OpenspecPulse::Digest do
       repo: "r", repo_path: "/r", name:, path: "/r/openspec/changes/#{name}", last_touched: Time.now,
       touched_source: "git", days_quiet: days, kind:, openspec_status: "in-progress", stale:,
       done: 1, total: 1 + ready, ready:, openspec_done: 1, openspec_total: 1 + ready,
-      count_mismatch: false, tasks_file: true, error: nil, groups: [], purpose: nil
+      count_mismatch: false, tasks_file: true, error: nil, groups: [], purpose: nil, jira: nil
     )
   end
 

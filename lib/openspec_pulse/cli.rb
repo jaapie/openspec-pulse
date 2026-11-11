@@ -81,7 +81,7 @@ module OpenspecPulse
       config = Config.load(Config.path)
       repos = Discovery.new(scan: config.scan, repos: config.repos, home: Dir.home).repos
       Report.build(repos:, runner: CommandRunner.new, stale_after_days: config.stale_after_days,
-                   now: Time.now, nudges: State.new.nudges?)
+                   now: Time.now, nudges: State.new.nudges?, jira_url: config.jira_url)
     rescue Error => e
       raise Thor::Error, e.message
     end

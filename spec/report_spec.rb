@@ -33,8 +33,8 @@ RSpec.describe OpenspecPulse::Report do
     { "name" => name, "completedTasks" => done, "totalTasks" => total, "status" => status }
   end
 
-  def build(repos)
-    described_class.build(repos:, runner:, stale_after_days: 14, now:, nudges: true)
+  def build(repos, jira_url: nil)
+    described_class.build(repos:, runner:, stale_after_days: 14, now:, nudges: true, jira_url:)
   end
 
   describe "reading repos (6.1)" do
@@ -152,13 +152,58 @@ RSpec.describe OpenspecPulse::Report do
     end
   end
 
+  describe "jira" do
+    def change_with(proposal, jira_url: nil)
+      repo = make_repo("acme-api", "add-rate-limits" => "- [ ] 1.1 a\n")
+      if proposal
+        File.write(File.join(repo.path, "openspec/changes/add-rate-limits/proposal.md"), proposal)
+      end
+      openspec_says(repo, entry("add-rate-limits", 0, 1))
+      build([repo], jira_url:).changes.first
+    end
+
+    let(:proposal) { "## Why\n\nJira: ABC-12 (under epic ABC-1). One noisy client can starve the rest.\n" }
+
+    it "gives the task key and its link when jira_url is set" do
+      change = change_with(proposal, jira_url: "https://example.atlassian.net")
+      expect(change.jira).to eq(key: "ABC-12", url: "https://example.atlassian.net/browse/ABC-12")
+    end
+
+    it "gives the key with no link when jira_url is not set" do
+      expect(change_with(proposal).jira).to eq(key: "ABC-12", url: nil)
+    end
+
+    it "gives nil, and no error, when the proposal names no task" do
+      change = change_with("## Why\n\nNo Jira. Refunds vanish.\n", jira_url: "https://example.atlassian.net")
+      expect(change.jira).to be_nil
+      expect(change.error).to be_nil
+    end
+
+    it "gives nil, and no error, when there is no proposal" do
+      change = change_with(nil)
+      expect(change.jira).to be_nil
+      expect(change.error).to be_nil
+    end
+
+    it "puts jira in the JSON" do
+      repo = make_repo("acme-api", "add-rate-limits" => "- [ ] 1.1 a\n")
+      File.write(File.join(repo.path, "openspec/changes/add-rate-limits/proposal.md"), proposal)
+      openspec_says(repo, entry("add-rate-limits", 0, 1))
+
+      json = JSON.parse(build([repo], jira_url: "https://example.atlassian.net").to_json)
+
+      expect(json["changes"].first["jira"])
+        .to eq("key" => "ABC-12", "url" => "https://example.atlassian.net/browse/ABC-12")
+    end
+  end
+
   describe "sorting, summary and JSON (6.3)" do
     def change(repo:, name:, kind:, days:, stale: false, error: nil)
       described_class::Change.new(
         repo:, repo_path: "/r/#{repo}", name:, path: "/r/#{repo}/openspec/changes/#{name}",
         last_touched: now - (days * 86_400), touched_source: "git", days_quiet: days,
         kind:, openspec_status: "in-progress", stale:, done: 1, total: 2, ready: 1,
-        openspec_done: 1, openspec_total: 2, count_mismatch: false, tasks_file: true, error:, groups: [], purpose: nil
+        openspec_done: 1, openspec_total: 2, count_mismatch: false, tasks_file: true, error:, groups: [], purpose: nil, jira: nil
       )
     end
 
@@ -240,7 +285,7 @@ RSpec.describe OpenspecPulse::Report do
         expect(json["repos"].first.keys).to contain_exactly("path", "name", "error")
         expect(json["changes"].first.keys).to include(
           "repo", "repo_path", "name", "path", "last_touched", "touched_source", "days_quiet", "kind",
-          "openspec_status", "stale", "done", "total", "ready", "count_mismatch", "tasks_file", "error", "groups", "purpose"
+          "openspec_status", "stale", "done", "total", "ready", "count_mismatch", "tasks_file", "error", "groups", "purpose", "jira"
         )
         stale = json["changes"].first
         expect(stale).to include("name" => "stale-one", "days_quiet" => 91, "stale" => true, "ready" => 1,
