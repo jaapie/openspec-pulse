@@ -122,7 +122,7 @@ A local clone works as the URL too (`omarchy plugin add ~/dev/openspec-pulse --e
 
 - **Badge**: a task-list glyph, with the number of stale changes beside it in the theme's attention colour, or a warning glyph when the CLI or a repo has an error. Hover for a summary.
 - **Panel** (click the badge): totals, then changes grouped as stale, ready to archive, in progress and not yet started. The panel stays one size and pages rather than scrolls. Type to narrow the list to changes whose name or repo contains the text; Escape clears the search, and a second Escape closes the panel. On the command line, pipe `status` through `grep` instead. A switch in its header turns the daily reminder on or off, which only affects the notification, not the badge.
-- **Change view** (click a change): its task groups in file order, open tasks listed and done ones folded away, plus buttons to open your default agent in the repo (with `/opsx:apply <change>`, told to check with you before changing anything) or open `tasks.md` in your editor. Hover cut-off text to read all of it.
+- **Change view** (click a change): what the change is for, from the Why section of its `proposal.md` (three lines, then "more"), then its task groups in file order, open tasks listed and done ones folded away, plus buttons to open your default agent in the repo (with `/opsx:apply <change>`, told to check with you before changing anything) or open `tasks.md` in your editor. Hover cut-off text to read all of it.
 
 The plugin runs `status --json` every 5 minutes and whenever the panel opens, and `notify` on the same timer; the CLI decides whether a digest is due. The digest's **See more** opens this panel on the focused monitor.
 

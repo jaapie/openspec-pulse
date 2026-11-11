@@ -24,7 +24,12 @@ Item {
 
   // Which groups have their done tasks showing, by index. Reset per change.
   property var shownDone: ({})
-  onChangeChanged: shownDone = ({})
+  // Whether the purpose shows in full. Reset per change, like shownDone.
+  property bool purposeExpanded: false
+  onChangeChanged: {
+    shownDone = ({})
+    purposeExpanded = false
+  }
 
   Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
 
@@ -147,6 +152,49 @@ Item {
       id: groupsColumn
       width: flick.width - Style.space(8)
       spacing: Style.space(12)
+
+      // What the change is for, from the Why section of its proposal.md:
+      // three lines, then "more". Hidden when the CLI found no purpose.
+      Column {
+        visible: !!(root.change && root.change.purpose)
+        width: groupsColumn.width
+        spacing: Style.space(4)
+
+        Text {
+          textFormat: Text.PlainText
+          text: strings.t("change.purpose")
+          color: root.textColor
+          font.family: Style.font.family
+          font.pixelSize: Style.font.body
+          font.bold: true
+        }
+        Text {
+          id: purposeText
+          width: parent.width
+          textFormat: Text.PlainText
+          text: root.change && root.change.purpose ? root.change.purpose : ""
+          color: root.textColor
+          wrapMode: Text.Wrap
+          // maximumLineCount has no "unlimited" to bind back to, so a large number.
+          maximumLineCount: root.purposeExpanded ? 10000 : 3
+          elide: Text.ElideRight
+          font.family: Style.font.family
+          font.pixelSize: Style.font.bodySmall
+        }
+        Text {
+          visible: purposeText.truncated || root.purposeExpanded
+          textFormat: Text.PlainText
+          text: strings.t(root.purposeExpanded ? "change.less" : "change.more")
+          color: root.accentColor
+          font.family: Style.font.family
+          font.pixelSize: Style.font.bodySmall
+          MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.purposeExpanded = !root.purposeExpanded
+          }
+        }
+      }
 
       Text {
         visible: root.change && !root.change.tasks_file
