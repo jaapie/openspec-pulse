@@ -163,7 +163,8 @@ Item {
             anchors.fill: parent
             enabled: !!(root.change && root.change.jira && root.change.jira.url)
             hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
+            // A disabled MouseArea still sets its cursor, so tie it to the link.
+            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
             onClicked: root.openJira()
           }
           PanelToolTip {
