@@ -135,4 +135,46 @@ RSpec.describe OpenspecPulse::ProposalParser do
       File.chmod(0o644, path) if path
     end
   end
+
+  describe "the Jira task" do
+    def key(*paragraphs) = described_class.read("## Why\n\n#{paragraphs.join("\n\n")}\n").jira_key
+
+    it "takes the task, not the epic" do
+      expect(key("Jira: ABC-12 (under epic ABC-1, Summer work).", "Refunds vanish.")).to eq("ABC-12")
+    end
+
+    it "is not fooled by an epic named later in the sentence" do
+      expect(key("Jira: ABC-14 (no epic; moved out of epic ABC-1 on 04 Nov). Refunds vanish.")).to eq("ABC-14")
+    end
+
+    it "finds the key after a Work area sentence and inside bold markers" do
+      expect(key(%(Work area: billing/. Jira: **ABC-7** "Refund export". Refunds vanish.))).to eq("ABC-7")
+    end
+
+    it "finds the key in a later paragraph's opening sentences" do
+      expect(key("Refunds vanish.", "Jira: ABC-9. Totals drift too.")).to eq("ABC-9")
+    end
+
+    it "gives nil for No Jira" do
+      expect(key("No Jira ticket yet. Refunds vanish.")).to be_nil
+    end
+
+    it "gives nil when Jira is mentioned mid-paragraph" do
+      expect(key("Refunds vanish. Jira: ABC-7 tracks the fix.")).to be_nil
+    end
+
+    it "gives nil when the Jira sentence names no key" do
+      expect(key("Jira: none yet. Refunds vanish.")).to be_nil
+    end
+
+    it "keeps the purpose alongside the key" do
+      proposal = described_class.read("## Why\n\nJira: ABC-12. Refunds vanish.\n")
+      expect(proposal.purpose).to eq("Refunds vanish.")
+    end
+
+    it "gives no purpose and no key for a missing file" do
+      proposal = described_class.read_file("/nonexistent/proposal.md")
+      expect([proposal.purpose, proposal.jira_key]).to eq([nil, nil])
+    end
+  end
 end
