@@ -47,7 +47,12 @@ repos:
 
 # An in-progress change with no commits to its folder for this many days is stale.
 stale_after_days: 14
+
+# Your Jira site (optional). A change's Jira task links to <jira_url>/browse/<KEY>.
+jira_url: https://example.atlassian.net
 ```
+
+A change's Jira task is the first key after "Jira:" in the sentences that open a paragraph of its proposal's "## Why" section, for example `Jira: ABC-12 (under epic ABC-1).`
 
 A repo found twice (by two scan roots, or by a scan root and `repos`) is listed once. A scan root or repo that doesn't exist is shown as an error, not skipped.
 

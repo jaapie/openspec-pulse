@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "uri"
 require "yaml"
 require_relative "../openspec_pulse"
 
@@ -9,7 +10,7 @@ module OpenspecPulse
   class Config
     DEFAULT_STALE_AFTER_DAYS = 14
 
-    attr_reader :path, :scan, :repos, :stale_after_days
+    attr_reader :path, :scan, :repos, :stale_after_days, :jira_url
 
     def self.path(env = ENV)
       base = env["XDG_CONFIG_HOME"]
@@ -36,12 +37,29 @@ module OpenspecPulse
       @scan = path_list(data, "scan")
       @repos = path_list(data, "repos")
       @stale_after_days = data.fetch("stale_after_days", DEFAULT_STALE_AFTER_DAYS)
-      return if @stale_after_days.is_a?(Integer) && @stale_after_days.positive?
+      unless @stale_after_days.is_a?(Integer) && @stale_after_days.positive?
+        raise ConfigError, "In #{path}, stale_after_days must be a positive whole number"
+      end
 
-      raise ConfigError, "In #{path}, stale_after_days must be a positive whole number"
+      @jira_url = site_url(data.fetch("jira_url", nil))
     end
 
     private
+
+    # The Jira site's address, so a task key can link to <site>/browse/<KEY>.
+    def site_url(value)
+      return nil if value.nil?
+      return value.delete_suffix("/") if http_site?(value)
+
+      raise ConfigError, "In #{@path}, jira_url must be an http or https address, such as https://example.atlassian.net"
+    end
+
+    def http_site?(value)
+      uri = URI.parse(value) if value.is_a?(String)
+      uri.is_a?(URI::HTTP) && !uri.host.to_s.empty?
+    rescue URI::InvalidURIError
+      false
+    end
 
     def path_list(data, key)
       value = data.fetch(key, nil) || []

@@ -82,4 +82,29 @@ RSpec.describe OpenspecPulse::Config, ".load" do
     expect { described_class.load(path) }
       .to raise_error(OpenspecPulse::ConfigError, /scan/)
   end
+
+  describe "jira_url" do
+    it "is nil when absent" do
+      write("scan: []\n")
+      expect(described_class.load(path).jira_url).to be_nil
+    end
+
+    it "keeps a site address" do
+      write("jira_url: https://example.atlassian.net\n")
+      expect(described_class.load(path).jira_url).to eq("https://example.atlassian.net")
+    end
+
+    it "drops a trailing slash" do
+      write("jira_url: https://example.atlassian.net/\n")
+      expect(described_class.load(path).jira_url).to eq("https://example.atlassian.net")
+    end
+
+    ["example", "ftp://x", "https://", "42"].each do |bad|
+      it "rejects #{bad.inspect}, naming the path and the setting" do
+        write("jira_url: #{bad}\n")
+        expect { described_class.load(path) }
+          .to raise_error(OpenspecPulse::ConfigError, /#{Regexp.escape(path)}.*jira_url/)
+      end
+    end
+  end
 end
