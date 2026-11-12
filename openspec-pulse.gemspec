@@ -12,5 +12,4 @@ Gem::Specification.new do |spec|
   spec.files = Dir["lib/**/*.rb", "bin/*", "assets/*"]
   spec.bindir = "bin"
   spec.executables = ["openspec-pulse"]
-  spec.add_dependency "thor", "~> 1.3"
 end
