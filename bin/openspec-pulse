@@ -6,4 +6,4 @@ require "bundler/setup"
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 require "openspec_pulse/cli"
 
-OpenspecPulse::CLI.start(ARGV)
+exit OpenspecPulse::CLI.start(ARGV)
