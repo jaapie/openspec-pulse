@@ -108,7 +108,7 @@ Item {
 
   function failure(exitCode, err, out) {
     if (exitCode === 127)
-      return "Could not find openspec-pulse at " + root.cli + ". Install it on PATH, run bundle install in the plugin folder, or set the command setting."
+      return "Could not find openspec-pulse at " + root.cli + ". Install it on PATH, or set the command setting to its full path. It needs Ruby 4.0, git and openspec."
     var detail = String(err || out || "").trim()
     return "openspec-pulse failed (exit " + exitCode + ")" + (detail ? ": " + detail.substring(0, 1000) : "")
   }
