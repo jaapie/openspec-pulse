@@ -21,6 +21,14 @@ Panel {
   readonly property bool hasError: service ? service.hasError : false
   readonly property bool waiting: !service || (service.report === null && service.cliError === "")
 
+  // The same totals as the panel header, e.g. "5 changes · 2 stale · 1 ready to archive".
+  function count(key, n) { return strings.tn(key, n).arg(Commons.I18n.formatNumber(n)) }
+  readonly property var summary: service && service.report ? service.report.summary : null
+  readonly property string summaryText: summary
+    ? [count("panel.changes", summary.changes), count("panel.stale", summary.stale),
+       count("panel.archive", summary.complete)].join(" · ")
+    : ""
+
   // Nerd Font glyphs: a task list, and a warning sign for errors.
   readonly property string listGlyph: ""
   readonly property string errorGlyph: ""
@@ -62,8 +70,7 @@ Panel {
     active: root.staleCount > 0 || root.hasError
     tooltipText: root.hasError ? strings.t("bar.error")
                : root.waiting ? strings.t("bar.loading")
-               : root.staleCount > 0 ? strings.tn("bar.stale", root.staleCount).arg(Commons.I18n.formatNumber(root.staleCount))
-               : strings.t("bar.nothingStale")
+               : root.summaryText
     onPressed: function(buttonCode) { root.toggle() }
   }
 

@@ -1,9 +1,4 @@
 {
-  "bar.stale": {
-    "one": "%1 OpenSpec change has gone quiet",
-    "other": "%1 OpenSpec changes have gone quiet"
-  },
-  "bar.nothingStale": "No OpenSpec changes have gone quiet",
   "bar.error": "openspec-pulse has a problem: open the panel to see it",
   "bar.loading": "Reading OpenSpec changes",
   "panel.title": "OpenSpec changes",
