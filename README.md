@@ -6,6 +6,10 @@ Tells you which OpenSpec changes have gone quiet, across every repo on your mach
 
 *The Omarchy panel, with demo data.*
 
+![The change view for add-rate-limiting: its repo, last commit and Jira task chip, a progress bar, the purpose from its proposal, then its open tasks by group, with buttons to open it in an agent or open tasks.md](change-view.png)
+
+*Clicking a change opens its purpose, Jira task and open tasks.*
+
 Two parts live in this repo:
 
 - a Ruby CLI, `openspec-pulse`, which does all the work and prints a table or JSON
