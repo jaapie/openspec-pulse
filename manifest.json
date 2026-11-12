@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "io.github.jaapie.openspec-pulse",
   "name": "OpenSpec Pulse",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Jacob Degeling",
   "license": "MIT",
-  "description": "Shows which OpenSpec changes have gone quiet, and their tasks, from the openspec-pulse CLI.",
+  "description": "Keeps an eye on your OpenSpec changes: which have gone quiet, which are ready to archive, and what's left to do.",
   "kinds": [
     "service",
     "bar-widget"
