@@ -17,7 +17,8 @@ RSpec.describe "bin/openspec-pulse with no gems installed" do
     gems = FileUtils.mkdir_p(File.join(@dir, "gems")).first
     env = { "GEM_HOME" => gems, "GEM_PATH" => gems, "RUBYOPT" => nil, "BUNDLE_GEMFILE" => nil,
             "XDG_CONFIG_HOME" => File.join(@dir, "config"), "XDG_STATE_HOME" => File.join(@dir, "state") }
-    Bundler.with_unbundled_env { Open3.capture3(env, BIN_PATH, *args, chdir: @dir) }
+    run = -> { Open3.capture3(env, BIN_PATH, *args, chdir: @dir) }
+    defined?(Bundler) ? Bundler.with_unbundled_env(&run) : run.call
   end
 
   it "prints the version" do

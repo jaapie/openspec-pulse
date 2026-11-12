@@ -3,7 +3,7 @@
 
 # No Bundler: the CLI uses only Ruby's standard library, so the plugin works
 # straight after `omarchy plugin add`. The Ruby check comes first, before any
-# file that needs Ruby 4.0 syntax.
+# file that needs newer Ruby syntax.
 lib = File.expand_path("../lib", __dir__)
 require File.join(lib, "openspec_pulse", "ruby_check")
 if (problem = OpenspecPulse::RubyCheck.problem)

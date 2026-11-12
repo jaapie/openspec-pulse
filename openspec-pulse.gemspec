@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Jacob Degeling"]
   spec.summary = "Reminds you which OpenSpec changes have gone quiet"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 4.0"
+  spec.required_ruby_version = ">= 3.4"
   spec.files = Dir["lib/**/*.rb", "bin/*", "assets/*"]
   spec.bindir = "bin"
   spec.executables = ["openspec-pulse"]
