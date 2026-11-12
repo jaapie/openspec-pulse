@@ -17,7 +17,7 @@ Item {
   readonly property int maxOutputBytes: 4 * 1024 * 1024
   readonly property string home: Quickshell.env("HOME") || ""
 
-  // mise's shims first, so Ruby 4.0 and openspec come from mise, not Arch's
+  // mise's shims first, so with mise its Ruby and openspec win over Arch's
   // /usr/bin/ruby. /usr/share/omarchy/bin is where `omarchy` and the
   // notification command live.
   readonly property var cliEnvironment: ({
@@ -108,7 +108,7 @@ Item {
 
   function failure(exitCode, err, out) {
     if (exitCode === 127)
-      return "Could not find openspec-pulse at " + root.cli + ". Install it on PATH, or set the command setting to its full path. It needs Ruby 4.0, git and openspec."
+      return "Could not find openspec-pulse at " + root.cli + ". Install it on PATH, or set the command setting to its full path. It needs Ruby 3.4 or later, git and openspec."
     var detail = String(err || out || "").trim()
     return "openspec-pulse failed (exit " + exitCode + ")" + (detail ? ": " + detail.substring(0, 1000) : "")
   }

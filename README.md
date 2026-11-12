@@ -17,7 +17,7 @@ Two parts live in this repo:
 
 ## Install
 
-You need Ruby 4.0 (the repo pins it in `mise.toml`), `git` and the `openspec` CLI on your PATH. The CLI uses only Ruby's standard library, so there are no gems to install.
+You need Ruby 3.4 or later, `git` and the `openspec` CLI on your PATH. Arch's `ruby` package (Ruby 3.4) is enough; mise isn't needed, though the repo's `mise.toml` picks Ruby 4.0 if you use it. The CLI uses only Ruby's standard library, so there are no gems to install.
 
 ```sh
 git clone https://github.com/jaapie/openspec-pulse.git ~/dev/openspec-pulse
@@ -26,11 +26,7 @@ git clone https://github.com/jaapie/openspec-pulse.git ~/dev/openspec-pulse
 
 `bin/openspec-pulse` finds its own `lib/`, so it works from any directory. It isn't published as a gem; the gemspec is there so another Ruby app can use it with `gem "openspec-pulse", git: "https://github.com/jaapie/openspec-pulse.git"`.
 
-If `/usr/bin` comes before mise on your PATH (Arch's `ruby` package installs Ruby 3.4 there), the system Ruby runs it instead and stops with "openspec-pulse needs Ruby 4.0 or later, but this is Ruby 3.4". Put mise's shims first:
-
-```sh
-PATH="$HOME/.local/share/mise/shims:$PATH" bin/openspec-pulse status
-```
+An older Ruby stops with "openspec-pulse needs Ruby 3.4 or later, but this is Ruby 3.3.6" (or whichever it found).
 
 ## Config
 
@@ -121,7 +117,7 @@ The repo is also an Omarchy shell plugin: `manifest.json`, `Service.qml`, `BarWi
 omarchy plugin add https://github.com/jaapie/openspec-pulse.git --enable
 ```
 
-That's all: the plugin runs the CLI from its own folder, which needs Ruby 4.0, `git` and `openspec` (see [Install](#install)) but no gems. A local clone works as the URL too (`omarchy plugin add ~/dev/openspec-pulse --enable`); `omarchy plugin update io.github.jaapie.openspec-pulse` pulls later commits. If the badge doesn't appear, restart the shell with `omarchy restart shell`. Do the same after an update that changes the panel: the update reloads the plugin, but the shell keeps its cached copy of the panel's QML until it restarts. To uninstall, run `omarchy plugin remove io.github.jaapie.openspec-pulse`. The plugin's id is `io.github.jaapie.openspec-pulse`; the CLI is still called `openspec-pulse`.
+That's all: the plugin runs the CLI from its own folder, which needs Ruby 3.4 or later, `git` and `openspec` (see [Install](#install)) but no gems. A local clone works as the URL too (`omarchy plugin add ~/dev/openspec-pulse --enable`); `omarchy plugin update io.github.jaapie.openspec-pulse` pulls later commits. If the badge doesn't appear, restart the shell with `omarchy restart shell`. Do the same after an update that changes the panel: the update reloads the plugin, but the shell keeps its cached copy of the panel's QML until it restarts. To uninstall, run `omarchy plugin remove io.github.jaapie.openspec-pulse`. The plugin's id is `io.github.jaapie.openspec-pulse`; the CLI is still called `openspec-pulse`.
 
 ### What it shows
 
@@ -139,13 +135,13 @@ The shell doesn't start with mise's PATH, so the plugin runs the CLI with its ow
 ~/.local/share/mise/shims : ~/.local/bin : /usr/share/omarchy/bin : /usr/bin : /bin
 ```
 
-mise's shims come first so Ruby 4.0 and `openspec` are found ahead of Arch's Ruby 3.4 in `/usr/bin`; `/usr/share/omarchy/bin` is where the notification command lives. The plugin uses `openspec-pulse` if it's on that PATH, and otherwise the copy in its own `bin/`.
+mise's shims come first, so if you use mise, its Ruby and `openspec` are found ahead of Arch's in `/usr/bin`; without mise, Arch's Ruby 3.4 is used, which is fine. `/usr/share/omarchy/bin` is where the notification command lives. The plugin uses `openspec-pulse` if it's on that PATH, and otherwise the copy in its own `bin/`.
 
 If the CLI can't be found or fails, the badge shows its warning glyph and the panel shows the error. It never shows an empty list instead.
 
 ### The `command` setting
 
-Without mise, or to use a CLI installed somewhere else, set the widget's `command` setting to the full path of the `openspec-pulse` executable, in the bar widget's settings or in `~/.config/omarchy/shell.json`:
+To use a CLI installed somewhere else, set the widget's `command` setting to the full path of the `openspec-pulse` executable, in the bar widget's settings or in `~/.config/omarchy/shell.json`:
 
 ```json
 { "id": "io.github.jaapie.openspec-pulse", "command": "/home/you/bin/openspec-pulse" }
