@@ -1,5 +1,9 @@
 .superpowers/
 
+# Development gems, installed into the repo (see mise.toml).
+/.bundle/
+/vendor/bundle/
+
 # Private working notes and local agent tooling, never published.
 CLAUDE.local.md
 .claude/

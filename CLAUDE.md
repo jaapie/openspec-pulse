@@ -4,7 +4,7 @@ Shows which OpenSpec changes have gone quiet, across every repo on the user's ma
 
 Two parts, one repo:
 
-- **Ruby CLI** (`bin/openspec-pulse`, `lib/`): all the logic. Ruby's standard library only (OptionParser for arguments), so it runs on Ruby 3.4 or later with no gems installed; Bundler and RSpec are for the tests. Develop on 4.0 (`mise.toml`), and keep the suite passing on Arch's 3.4 too.
+- **Ruby CLI** (`bin/openspec-pulse`, `lib/`): all the logic. Ruby's standard library only (OptionParser for arguments), so it runs on Ruby 3.4 or later with no gems installed; Bundler and RSpec are for the tests. Develop on the system Ruby, `/usr/bin/ruby` 3.4.10: `mise.toml` turns mise's Ruby off in this repo, and the test gems live in `vendor/bundle` (git-ignored). Plain `bundle exec rspec` works, with no PATH prefix.
 - **Omarchy shell plugin** (`manifest.json` and the QML files at the root): only displays the CLI's JSON.
 
 When working here:

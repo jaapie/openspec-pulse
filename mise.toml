@@ -1,2 +1,4 @@
-[tools]
-ruby = "4.0"
+# Develop on Arch's system Ruby (/usr/bin/ruby, 3.4), the oldest Ruby the CLI
+# supports, rather than mise's. Gems for the tests go in vendor/bundle.
+[settings]
+disable_tools = ["ruby"]

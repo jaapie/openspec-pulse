@@ -178,9 +178,12 @@ To work on it:
 ```sh
 git clone https://github.com/jaapie/openspec-pulse.git
 cd openspec-pulse
+bundle config set --local path vendor/bundle
 bundle install
 bundle exec rspec
 ```
+
+Development uses the system Ruby (Arch's 3.4, the oldest the CLI supports): the repo's `mise.toml` turns mise's Ruby off here, and the test gems go in `vendor/bundle`, so nothing is installed system-wide.
 
 - The CLI holds all the logic and is built test-first with RSpec: please add a failing spec before the code that makes it pass, and keep `bundle exec rspec` green.
 - The QML only lays out what the CLI reports. Check plugin changes with `omarchy plugin validate .`, then try them in the real shell. After `omarchy plugin update`, restart the shell (`omarchy restart shell`) so it picks up panel changes.
