@@ -71,7 +71,7 @@ RSpec.describe OpenspecPulse::Digest do
     let(:stale_report) { report(stale("fix-stuck-firewall-registrations", 91, 10), complete("x")) }
 
     def deliver(rep = stale_report, force: false, on: today)
-      described_class.new(rep).deliver(state:, runner:, today: on, force:, icon: "/repo/assets/icon.png", see_more:)
+      described_class.new(rep).deliver(state:, runner:, today: on, force:, see_more:)
     end
 
     def sends = runner.calls.select { it[:command].first == "omarchy-notification-send" }
@@ -81,7 +81,7 @@ RSpec.describe OpenspecPulse::Digest do
       expect(sends.size).to eq(1)
       expect(sends.first[:command]).to eq([
         "omarchy-notification-send", "--app-name", "openspec-pulse", "-u", "normal",
-        "--image", "/repo/assets/icon.png",
+        "-g", "\u{f4a0}",
         "You have 1 stale OpenSpec change, and 1 change ready to archive.",
         "--action", "See more", *see_more
       ])

@@ -89,7 +89,7 @@ You have 6 stale OpenSpec changes, and 2 changes ready to archive.
 
 A part with nothing in it is left out ("You have 1 stale OpenSpec change." or "You have 2 OpenSpec changes ready to archive."), and nothing is sent when both are zero. The notification doesn't list changes; the details are in the Omarchy plugin's panel and in `status`.
 
-The notification goes through `omarchy notification send`, so `notify` needs Omarchy. It carries a placeholder "OSP" icon and goes away on its own after a few seconds. Clicking it, or its **See more** button, opens the Omarchy plugin's panel, or a floating terminal showing the `status` table when the plugin isn't installed.
+The notification goes through `omarchy notification send`, so `notify` needs Omarchy. It shows the same task-list glyph as the bar badge, in your theme's text colour, and goes away on its own after a few seconds. Clicking it, or its **See more** button, opens the Omarchy plugin's panel, or a floating terminal showing the `status` table when the plugin isn't installed.
 
 It sends at most once per local calendar day, so it's safe to run often (the Omarchy plugin runs it every 5 minutes). The date of the last digest is kept in `$XDG_STATE_HOME/openspec-pulse/last_digest` (`~/.local/state/openspec-pulse/` by default), so a restart doesn't send a second one.
 
@@ -163,15 +163,12 @@ Ideas, roughly in order. Nothing here is promised.
 - **Grouping by repo** in the panel.
 - **Reminders away from the desktop**, for when you're not at this machine.
 - **Task counting**: OpenSpec also counts lines like `* [ ]` and `1. [ ]` as tasks, while openspec-pulse only counts `- [ ]`. Today a difference shows as a count mismatch; matching OpenSpec may be better.
-- **A real icon** (see below).
 
 ## Contributing
 
 Issues and pull requests are welcome at [github.com/jaapie/openspec-pulse](https://github.com/jaapie/openspec-pulse): bugs, ideas, or a go at something on the roadmap.
 
 The project's plans (OpenSpec changes and specs) are kept privately, which is what `openspec/config.yaml` refers to. You don't need them to contribute: if OpenSpec reports an unknown store, that's expected.
-
-**Wanted: an icon.** The notification currently uses a placeholder, `assets/icon.png`, which is just "OSP" in white on a transparent background. If you'd like to design something better, a pull request or an issue with a sketch would be lovely. It needs to read well small, on light and dark notification cards.
 
 To work on it:
 

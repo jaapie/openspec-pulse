@@ -96,7 +96,7 @@ module OpenspecPulse
     def run_notify(options, _args)
       outcome = Digest.new(build_report).deliver(
         state: State.new, runner: CommandRunner.new, today: Date.today, force: options.fetch(:force, false),
-        icon: File.join(ROOT, "assets", "icon.png"), see_more: see_more_command
+        see_more: see_more_command
       )
       @out.puts NOTIFY_MESSAGES.fetch(outcome)
     end

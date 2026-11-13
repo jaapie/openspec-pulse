@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Reminds you which OpenSpec changes have gone quiet"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.4"
-  spec.files = Dir["lib/**/*.rb", "bin/*", "assets/*"]
+  spec.files = Dir["lib/**/*.rb", "bin/*"]
   spec.bindir = "bin"
   spec.executables = ["openspec-pulse"]
 end

@@ -27,9 +27,9 @@ module OpenspecPulse
 
     # Returns :sent, :nothing_to_report, :nudges_off or :already_sent.
     # A forced send ignores the daily limit and the nudge setting, and doesn't record the date.
-    # icon is an absolute image path; see_more is the argv the shell runs when
-    # the card or its See more button is clicked.
-    def deliver(state:, runner:, today:, icon:, see_more:, force: false)
+    # see_more is the argv the shell runs when the card or its See more button
+    # is clicked.
+    def deliver(state:, runner:, today:, see_more:, force: false)
       return :nothing_to_report unless worth_sending?
 
       unless force
@@ -37,10 +37,14 @@ module OpenspecPulse
         return :already_sent if state.last_digest == today
       end
 
-      send_notification(runner, icon:, see_more:)
+      send_notification(runner, see_more:)
       state.last_digest = today unless force
       :sent
     end
+
+    # The bar badge's Nerd Font task list. The shell draws a glyph in the
+    # theme's text colour, so it suits light and dark cards alike.
+    GLYPH = "\u{f4a0}"
 
     private
 
@@ -49,9 +53,9 @@ module OpenspecPulse
     # omarchy notification send, not notify-send: the shell runs the action
     # itself, so nothing has to wait for the click. Clicking the card runs the
     # first action, so See more covers both.
-    def send_notification(runner, icon:, see_more:)
+    def send_notification(runner, see_more:)
       result = runner.run("omarchy-notification-send", "--app-name", "openspec-pulse", "-u", "normal",
-                          "--image", icon, message, "--action", "See more", *see_more)
+                          "-g", GLYPH, message, "--action", "See more", *see_more)
       return if result.success?
 
       reason = if result.missing? then "omarchy-notification-send was not found on PATH"

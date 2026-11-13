@@ -40,8 +40,9 @@ RSpec.describe "bin/openspec-pulse notify" do
     expect(out).to include("Digest sent")
     sent = File.read(File.join(@dir, "sent")).lines.map(&:chomp)
     expect(sent).to include("You have 1 stale OpenSpec change.", "See more")
-    expect(sent[sent.index("--image") + 1]).to eq(File.expand_path("../assets/icon.png", __dir__))
-    expect(File).to exist(File.expand_path("../assets/icon.png", __dir__))
+    # The bar's task-list glyph, drawn in the theme's text colour on light and dark cards.
+    expect(sent[sent.index("-g") + 1]).to eq("\u{f4a0}")
+    expect(sent).not_to include("--image")
     action = sent[(sent.index("See more") + 1)..]
     expect(action.first(2)).to eq(["sh", "-c"])
     script = action[2]
